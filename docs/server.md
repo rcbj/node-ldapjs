@@ -24,6 +24,7 @@ The full list of options is:
 ||log||You can optionally pass in a Bunyan compatible logger instance the client will use to acquire a child logger.||
 ||certificate||A PEM-encoded X.509 certificate; will cause this server to run in TLS mode.||
 ||key||A PEM-encoded private key that corresponds to _certificate_ for SSL.||
+||routeAnonymousBinds||Boolean, default `false`. By default the server answers an anonymous bind (an empty name and empty credentials) with success itself, and no bind handler sees it. When `true`, the bind is routed to the handlers registered for it (an empty DN matches a handler registered for `''`), so a server can refuse anonymous binds.||
 
 ### Note On Logger
 

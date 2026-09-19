@@ -22,6 +22,59 @@ tap.test('basic create', function (t) {
   t.end()
 })
 
+tap.test('anonymous bind is answered by the server by default', function (t) {
+  const server = ldap.createServer()
+  let handlerCalled = false
+  server.bind('', function (req, res, next) {
+    handlerCalled = true
+    return next(new ldap.InappropriateAuthenticationError('no anonymous'))
+  })
+  server.listen(0, '127.0.0.1', function () {
+    const client = ldap.createClient({ url: server.url })
+    client.bind('', '', function (err) {
+      t.error(err, 'the anonymous bind succeeds')
+      t.equal(handlerCalled, false, 'and no bind handler saw it')
+      client.unbind()
+      server.close(() => t.end())
+    })
+  })
+})
+
+tap.test('routeAnonymousBinds sends an anonymous bind to its handler',
+  function (t) {
+    const server = ldap.createServer({ routeAnonymousBinds: true })
+    let seen = null
+    server.bind('', function (req, res, next) {
+      seen = req.dn.toString()
+      if (seen === '') {
+        return next(new ldap.InappropriateAuthenticationError('no anonymous'))
+      }
+      res.end()
+      return next()
+    })
+    server.listen(0, '127.0.0.1', function () {
+      const client = ldap.createClient({ url: server.url })
+      client.bind('', '', function (err) {
+        t.ok(err, 'the handler refused it')
+        t.equal(err && err.code, 48, 'with inappropriateAuthentication')
+        t.equal(seen, '', 'and the handler saw the empty name')
+        client.bind('cn=someone', 'secret', function (err2) {
+          t.error(err2, 'a named bind still reaches the handler and succeeds')
+          t.equal(seen, 'cn=someone', 'with its name')
+          client.unbind()
+          server.close(() => t.end())
+        })
+      })
+    })
+  })
+
+tap.test('routeAnonymousBinds must be a boolean', function (t) {
+  t.throws(function () {
+    ldap.createServer({ routeAnonymousBinds: 'yes' })
+  }, TypeError)
+  t.end()
+})
+
 tap.test('connection count', function (t) {
   const server = ldap.createServer()
   t.ok(server)
