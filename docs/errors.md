@@ -50,7 +50,13 @@ The name of this error.
 
 ## message
 
-The message that will be returned to the client.
+The message that will be returned to the client, as the result's
+diagnosticMessage, when the server was created with `encodeErrorMessage`.
+
+## diagnosticMessage
+
+On an error a client received: the server's diagnosticMessage (RFC 4511
+section 4.1.9), or `''` when the server sent none.
 
 # Complete list of LDAPError subclasses
 

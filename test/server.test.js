@@ -75,6 +75,81 @@ tap.test('routeAnonymousBinds must be a boolean', function (t) {
   t.end()
 })
 
+// A refusal with a message, then a response whose handler set errorMessage
+// itself; the client reads what arrived as `diagnosticMessage`.
+function diagnosticServer (options) {
+  const server = ldap.createServer(options)
+  server.modify('dc=test', function (req, res, next) {
+    return next(new ldap.UnwillingToPerformError('use the other door'))
+  })
+  server.del('dc=test', function (req, res, next) {
+    res.errorMessage = 'set on the response'
+    res.end(ldap.LDAP_UNWILLING_TO_PERFORM)
+    return next()
+  })
+  server.add('dc=test', function (_req, _res, _next) {
+    throw new Error('internal detail')
+  })
+  return server
+}
+
+function diagnosticsOf (server, callback) {
+  server.listen(0, '127.0.0.1', function () {
+    const client = ldap.createClient({ url: server.url })
+    const change = new ldap.Change({
+      operation: 'replace',
+      modification: new ldap.Attribute({ type: 'cn', values: ['x'] })
+    })
+    client.modify('dc=test', change, function (modifyErr) {
+      client.del('dc=test', function (delErr) {
+        client.add('dc=test', { cn: 'x' }, function (addErr) {
+          client.unbind()
+          server.close(function () {
+            callback(modifyErr, delErr, addErr)
+          })
+        })
+      })
+    })
+  })
+}
+
+tap.test('no diagnostic message is sent by default', function (t) {
+  diagnosticsOf(diagnosticServer(), function (modifyErr, delErr, addErr) {
+    t.equal(modifyErr && modifyErr.code, 53, 'the refusal is 53')
+    t.equal(modifyErr.diagnosticMessage, '', 'with no diagnostic message')
+    t.equal(delErr && delErr.code, 53, 'errorMessage on the response is 53')
+    t.equal(delErr.diagnosticMessage, '', 'with none either')
+    t.equal(addErr && addErr.code, 1, 'an uncaught exception is 1')
+    t.equal(addErr.diagnosticMessage, '', 'with none')
+    t.end()
+  })
+})
+
+tap.test('encodeErrorMessage sends errorMessage as the diagnostic message',
+  function (t) {
+    const server = diagnosticServer({ encodeErrorMessage: true })
+    t.equal(server._encodeErrorMessage, true, 'the server took the option')
+    diagnosticsOf(server, function (modifyErr, delErr, addErr) {
+      t.equal(modifyErr && modifyErr.code, 53, 'the refusal is 53')
+      t.equal(modifyErr.diagnosticMessage, 'use the other door',
+        'with the error\'s message as the diagnostic message')
+      t.equal(delErr && delErr.code, 53, 'errorMessage on the response is 53')
+      t.equal(delErr.diagnosticMessage, 'set on the response',
+        'with that text as the diagnostic message')
+      t.equal(addErr && addErr.code, 1, 'an uncaught exception is 1')
+      t.equal(addErr.diagnosticMessage, 'internal error',
+        'and its own message is not sent')
+      t.end()
+    })
+  })
+
+tap.test('encodeErrorMessage must be a boolean', function (t) {
+  t.throws(function () {
+    ldap.createServer({ encodeErrorMessage: 'yes' })
+  }, TypeError)
+  t.end()
+})
+
 tap.test('connection count', function (t) {
   const server = ldap.createServer()
   t.ok(server)
