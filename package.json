@@ -38,15 +38,15 @@
     "get-port": "^5.1.1",
     "highlight.js": "^11.7.0",
     "marked": "^4.2.12",
-    "tap": "^16.3.7"
+    "tap": "^21.8.0"
   },
   "scripts": {
-    "test": "tap --no-cov -R terse",
+    "test": "tap --disable-coverage -R terse",
     "test:ci": "tap --coverage-report=lcovonly -R terse",
     "test:cov": "tap -R terse",
     "test:cov:html": "tap --coverage-report=html -R terse",
-    "test:watch": "tap -n -w --no-coverage-report -R terse",
-    "test:integration": "tap --no-cov -R terse 'test-integration/**/*.test.js'",
+    "test:watch": "tap -w --disable-coverage -R terse",
+    "test:integration": "tap --disable-coverage -R terse --include 'test-integration/**/*.test.js'",
     "test:integration:local": "docker-compose up -d --wait && npm run test:integration ; docker-compose down",
     "lint": "eslint . --fix",
     "lint:ci": "eslint .",
@@ -55,5 +55,11 @@
   "pre-commit": [
     "lint:ci",
     "test"
-  ]
+  ],
+  "tap": {
+    "include": [
+      "test/**/*.test.js"
+    ],
+    "allow-incomplete-coverage": true
+  }
 }

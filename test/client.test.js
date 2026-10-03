@@ -339,11 +339,12 @@ tap.beforeEach((t) => {
   })
 })
 
+// tap 18 and later run this after the test has ended, where an assertion is
+// itself a failure: an unbind error rejects the hook instead.
 tap.afterEach((t) => {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     t.context.client.unbind((err) => {
-      t.error(err)
-      t.context.server.close(() => resolve())
+      t.context.server.close(() => err ? reject(err) : resolve())
     })
   })
 })
@@ -396,7 +397,9 @@ tap.test('createClient', t => {
   })
 
   t.test('url array is correctly assigned', async t => {
-    getPort().then(function (unusedPortNumber) {
+    // Returned, so the assertion lands before the test ends (tap 18+ fails
+    // an assertion made after).
+    return getPort().then(function (unusedPortNumber) {
       const client = ldap.createClient({
         url: [
           `ldap://127.0.0.1:${unusedPortNumber}`,
@@ -1422,8 +1425,9 @@ tap.test('setup reconnect', function (t) {
       doSearch,
       function cleanDisconnect (_, cb) {
         t.ok(rClient.connected)
-        rClient.once('close', function (err) {
-          t.error(err)
+        // `close` hands over a boolean (hadError), not an Error.
+        rClient.once('close', function (hadError) {
+          t.notOk(hadError)
           t.equal(rClient.connected, false)
           cb()
         })
