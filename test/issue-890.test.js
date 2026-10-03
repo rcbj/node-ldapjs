@@ -12,7 +12,7 @@ const { SearchResultEntry } = require('@ldapjs/messages')
 const server = ldapjs.createServer()
 const SUFFIX = ''
 
-tap.timeout = 10000
+tap.setTimeout(10000)
 
 server.bind(SUFFIX, (res, done) => {
   res.end()

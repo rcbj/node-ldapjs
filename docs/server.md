@@ -25,6 +25,7 @@ The full list of options is:
 ||certificate||A PEM-encoded X.509 certificate; will cause this server to run in TLS mode.||
 ||key||A PEM-encoded private key that corresponds to _certificate_ for SSL.||
 ||routeAnonymousBinds||Boolean, default `false`. By default the server answers an anonymous bind (an empty name and empty credentials) with success itself, and no bind handler sees it. When `true`, the bind is routed to the handlers registered for it (an empty DN matches a handler registered for `''`), so a server can refuse anonymous binds.||
+||encodeErrorMessage||Boolean, default `false`. By default a result is sent with an empty diagnosticMessage, whatever `res.errorMessage` or the message of an error passed to `next()` says. When `true`, that text is sent as the diagnosticMessage (RFC 4511 section 4.1.9), except for an uncaught exception in a handler, which is sent as `internal error`. A client reads it as the error's `diagnosticMessage`.||
 
 ### Note On Logger
 
