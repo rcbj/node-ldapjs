@@ -150,6 +150,56 @@ tap.test('encodeErrorMessage must be a boolean', function (t) {
   t.end()
 })
 
+// How long after an 'error' the server's end of a connection is closed, as
+// the client sees it (its 'close'), for a server built with `options`.
+function closeDelayAfterError (options, cb) {
+  const server = ldap.createServer(options)
+  server.on('clientError', function () {})
+  server.server.on('connection', function (sock) {
+    setImmediate(function () {
+      sock.emit('error', new Error('a fatal TLS alert was sent'))
+    })
+  })
+  server.listen(0, '127.0.0.1', function () {
+    const started = Date.now()
+    const client = net.connect(server.port, '127.0.0.1')
+    client.on('error', function () {})
+    client.on('close', function () {
+      const waited = Date.now() - started
+      server.close(function () { cb(waited) })
+    })
+  })
+}
+
+tap.test('a connection that errors is destroyed at once by default',
+  function (t) {
+    closeDelayAfterError(undefined, function (waited) {
+      t.ok(waited < 200, 'closed after ' + waited + ' ms')
+      t.end()
+    })
+  })
+
+tap.test('errorCloseDelay keeps a connection that errors open that long',
+  function (t) {
+    const server = ldap.createServer({ errorCloseDelay: 400 })
+    t.equal(server._errorCloseDelay, 400, 'the server took the option')
+    server.close()
+    closeDelayAfterError({ errorCloseDelay: 400 }, function (waited) {
+      t.ok(waited >= 350, 'closed after ' + waited + ' ms')
+      t.end()
+    })
+  })
+
+tap.test('errorCloseDelay must be a number of milliseconds', function (t) {
+  t.throws(function () {
+    ldap.createServer({ errorCloseDelay: '2000' })
+  }, TypeError)
+  t.throws(function () {
+    ldap.createServer({ errorCloseDelay: -1 })
+  }, TypeError)
+  t.end()
+})
+
 tap.test('connection count', function (t) {
   const server = ldap.createServer()
   t.ok(server)
