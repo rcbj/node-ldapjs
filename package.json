@@ -12,12 +12,12 @@
   "main": "lib/index.js",
   "dependencies": {
     "@ldapjs/asn1": "^2.0.0",
-    "@ldapjs/attribute": "^1.0.0",
+    "@ldapjs/attribute": "file:packages/attribute",
     "@ldapjs/change": "^1.0.0",
-    "@ldapjs/controls": "^2.1.0",
-    "@ldapjs/dn": "^1.1.0",
-    "@ldapjs/filter": "^2.1.1",
-    "@ldapjs/messages": "^1.3.0",
+    "@ldapjs/controls": "file:packages/controls",
+    "@ldapjs/dn": "file:packages/dn",
+    "@ldapjs/filter": "file:packages/filter",
+    "@ldapjs/messages": "file:packages/messages",
     "@ldapjs/protocol": "^1.2.1",
     "abstract-logging": "^2.0.1",
     "assert-plus": "^1.0.0",
@@ -58,7 +58,8 @@
   ],
   "tap": {
     "include": [
-      "test/**/*.test.js"
+      "test/**/*.test.js",
+      "packages/**/*.test.js"
     ],
     "allow-incomplete-coverage": true
   }

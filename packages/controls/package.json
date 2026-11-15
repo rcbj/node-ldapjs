@@ -1,0 +1,23 @@
+{
+  "name": "@ldapjs/controls",
+  "version": "2.1.0",
+  "description": "LDAP control objects",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/ldapjs/controls.git"
+  },
+  "keywords": [
+    "ldapjs"
+  ],
+  "author": "James Sumners",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ldapjs/controls/issues"
+  },
+  "homepage": "https://github.com/ldapjs/controls#readme",
+  "dependencies": {
+    "@ldapjs/asn1": "^1.2.0",
+    "@ldapjs/protocol": "^1.2.1"
+  }
+}

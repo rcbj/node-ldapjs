@@ -1,0 +1,26 @@
+{
+  "name": "@ldapjs/messages",
+  "homepage": "https://github.com/ldapjs/messages",
+  "description": "API for creating and parsing LDAP messages",
+  "version": "1.3.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ldapjs/messages.git"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "@ldapjs/asn1": "^2.0.0",
+    "@ldapjs/attribute": "^1.0.0",
+    "@ldapjs/change": "^1.0.0",
+    "@ldapjs/controls": "^2.1.0",
+    "@ldapjs/dn": "^1.1.0",
+    "@ldapjs/filter": "^2.1.1",
+    "@ldapjs/protocol": "^1.2.1",
+    "process-warning": "^2.2.0"
+  },
+  "precommit": [
+    "lint",
+    "test"
+  ]
+}

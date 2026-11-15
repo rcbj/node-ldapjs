@@ -1,0 +1,29 @@
+{
+  "originalAuthor": "Patrick Mooney",
+  "originalContributors": [
+    "Mark Cavage <mcavage@gmail.com>",
+    "Cody Peter Mello <cody.mello@joyent.com>"
+  ],
+  "name": "@ldapjs/filter",
+  "homepage": "https://github.com/ldapjs/filter",
+  "description": "API for handling LDAP-style filters",
+  "version": "2.1.1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ldapjs/filter.git"
+  },
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "./lib"
+  },
+  "dependencies": {
+    "@ldapjs/asn1": "2.0.0",
+    "@ldapjs/protocol": "^1.2.1",
+    "process-warning": "^2.1.0"
+  },
+  "precommit": [
+    "lint",
+    "test"
+  ]
+}

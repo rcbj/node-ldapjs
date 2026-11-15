@@ -2,3 +2,6 @@ node_modules/
 coverage/
 .nyc_output/
 docs/
+# The @ldapjs packages are upstream code in upstream style, linted by
+# configurations their tarballs do not ship (packages/README.md).
+packages/
