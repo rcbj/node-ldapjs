@@ -1,6 +1,6 @@
 'use strict'
 
-const { BerWriter } = require('@ldapjs/asn1')
+const { BerWriter } = require('ldapjs-asn1-v1')
 
 /**
  * Baseline LDAP control object. Implements

@@ -26,9 +26,14 @@ directories itself (`"@ldapjs/dn": "file:<fork>/packages/dn"`, and so on), so
 that npm puts them at its own top level where every other @ldapjs package
 resolves them; iya-sts does.
 
-`controls` still depends on `@ldapjs/asn1` 1.x, which npm installs in
-`packages/controls/node_modules`. Its parsers use that version's API, so the
-nested copy must ship with the rest.
+`controls` still needs `@ldapjs/asn1` 1.x, where everything else has
+2.0.0, and requires it as `ldapjs-asn1-v1` (`npm:@ldapjs/asn1@1.2.0` in its
+package.json). Under its own name npm would place that copy in
+`packages/controls/node_modules`, and when this fork is itself a `file:`
+dependency of a project, `npm ci` there records it in the lock and never
+installs it, so `controls` resolves 2.0.0 and throws on every control that
+carries a criticality. A distinct name has no conflict and lands at the
+top beside 2.0.0. That rename is the only change to `controls`.
 
 ## The fixes
 

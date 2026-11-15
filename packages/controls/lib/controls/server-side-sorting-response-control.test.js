@@ -1,7 +1,7 @@
 'use strict'
 
 const tap = require('tap')
-const { BerWriter } = require('@ldapjs/asn1')
+const { BerWriter } = require('ldapjs-asn1-v1')
 const SSSRC = require('./server-side-sorting-response-control')
 const Control = require('../control')
 

@@ -1,6 +1,6 @@
 'use strict'
 
-const { BerReader, BerWriter } = require('@ldapjs/asn1')
+const { BerReader, BerWriter } = require('ldapjs-asn1-v1')
 const Control = require('../control')
 const isObject = require('../is-object')
 const hasOwn = require('../has-own')

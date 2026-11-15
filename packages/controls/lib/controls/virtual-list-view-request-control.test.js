@@ -17,7 +17,7 @@ tap.test('stubbed', async t => {
 // 'use strict'
 
 // const { test } = require('tap')
-// const { BerReader, BerWriter } = require('@ldapjs/asn1')
+// const { BerReader, BerWriter } = require('ldapjs-asn1-v1')
 // const { getControl, VirtualListViewRequestControl: VLVRControl } = require('../../lib')
 
 // test('VLV request - new no args', function (t) {

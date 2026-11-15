@@ -1,7 +1,7 @@
 'use strict'
 
 const tap = require('tap')
-const { BerReader, BerWriter } = require('@ldapjs/asn1')
+const { BerReader, BerWriter } = require('ldapjs-asn1-v1')
 const controls = require('.')
 
 tap.test('#getControl', t => {

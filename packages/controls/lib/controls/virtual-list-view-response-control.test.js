@@ -17,7 +17,7 @@ tap.test('stubbed', async t => {
 //  'use strict'
 
 //  const { test } = require('tap')
-//  const { BerReader, BerWriter } = require('@ldapjs/asn1')
+//  const { BerReader, BerWriter } = require('ldapjs-asn1-v1')
 //  const ldap = require('../../lib')
 //  const { getControl, VirtualListViewResponseControl: VLVResponseControl } = require('../../lib')
 //  const OID = '2.16.840.1.113730.3.4.10'

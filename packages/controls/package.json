@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/ldapjs/controls#readme",
   "dependencies": {
-    "@ldapjs/asn1": "^1.2.0",
+    "ldapjs-asn1-v1": "npm:@ldapjs/asn1@1.2.0",
     "@ldapjs/protocol": "^1.2.1"
   }
 }
