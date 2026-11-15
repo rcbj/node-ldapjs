@@ -98,6 +98,24 @@ module.exports = function parseString (input) {
         pos += 1
         continue readRdnLoop
       }
+
+      // iya-sts: a hex-string value (`#4142`) ends at a space, so its
+      // attribute pair can end on one, and this loop used to go round for
+      // ever on any character that is not a separator: `cn=#4142 ,o=x`
+      // hung the whole process. Spaces before a separator are skipped (RFC
+      // 2253 section 4 allows them, and a string value already has them
+      // trimmed); anything else is an error, which the server answers as
+      // invalidDNSyntax.
+      if (char === 0x20) {
+        pos += 1
+        if (pos === length) {
+          rdns.push(rdn)
+          break readRdnLoop
+        }
+        continue
+      }
+      throw Error('unexpected character after attribute value at position ' +
+        pos + ': ' + String.fromCharCode(char))
     }
   }
 

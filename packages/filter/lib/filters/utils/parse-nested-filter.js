@@ -33,8 +33,16 @@ module.exports = function parseNestedFilter ({ startTag, buffer, constructor }) 
   const filters = []
   const currentFilterLength = reader.length
   while (reader.offset < currentFilterLength) {
+    const before = reader.offset
     const tag = reader.peek()
     const tagBuffer = reader.readRawBuffer(tag)
+    // iya-sts: a read that answers null leaves the offset where it was,
+    // and a length that runs past the buffer kept this loop going for
+    // ever on the same bytes, which hung the whole process. An
+    // iteration that does not advance is malformed BER.
+    if (tagBuffer === null || reader.offset <= before) {
+      throw Error('malformed filter at offset ' + before)
+    }
     const filter = FILTERS[tag].parse(tagBuffer)
     filters.push(filter)
   }

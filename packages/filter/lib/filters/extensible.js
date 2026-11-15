@@ -156,6 +156,7 @@ class ExtensibleFilter extends FilterString {
     // length property as the buffer is read.
     const end = reader.buffer.length
     while (reader.offset < end) {
+      const before = reader.offset
       // Read the context specific tag and act accordingly.
       const tag = reader.peek()
       switch (tag) {
@@ -178,6 +179,13 @@ class ExtensibleFilter extends FilterString {
         default: {
           throw Error('invalid extensible filter type: 0x' + tag.toString(16).padStart(2, '0'))
         }
+      }
+      // iya-sts: a read that answers null leaves the offset where it was,
+      // and a length that runs past the buffer kept this loop going for
+      // ever on the same bytes, which hung the whole process. An
+      // iteration that does not advance is malformed BER.
+      if (reader.offset <= before) {
+        throw Error('malformed extensible filter at offset ' + before)
       }
     }
 

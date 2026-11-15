@@ -133,7 +133,15 @@ class SearchResultReference extends LdapMessage {
 
     const endOfMessagePos = ber.offset + ber.length
     while (ber.offset < endOfMessagePos) {
+      const before = ber.offset
       const u = ber.readString()
+      // iya-sts: a read that answers null leaves the offset where it was,
+      // and a length that runs past the buffer kept this loop going for
+      // ever on the same bytes, which hung the whole process. An
+      // iteration that does not advance is malformed BER.
+      if (ber.offset <= before) {
+        throw Error('malformed reference URI at offset ' + before)
+      }
       uri.push(u)
     }
 

@@ -68,10 +68,18 @@ module.exports = function parseToMessage (ber) {
     ber.readSequence()
     const end = ber.offset + ber.length
     while (ber.offset < end) {
+      const before = ber.offset
       const c = getControl(ber)
       /* istanbul ignore else */
       if (c) {
         message.addControl(c)
+      }
+      // iya-sts: a read that answers null leaves the offset where it was,
+      // and a length that runs past the buffer kept this loop going for
+      // ever on the same bytes, which hung the whole process. An
+      // iteration that does not advance is malformed BER.
+      if (ber.offset <= before) {
+        throw Error('malformed control at offset ' + before)
       }
     }
   }

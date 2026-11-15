@@ -272,6 +272,7 @@ class SubstringFilter extends FilterString {
     // length property as the buffer is read.
     const end = reader.offset + reader.length
     while (reader.offset < end) {
+      const before = reader.offset
       const tag = reader.peek()
       switch (tag) {
         case 0x80: { // Initial
@@ -293,6 +294,13 @@ class SubstringFilter extends FilterString {
         default: {
           throw new Error('Invalid substrings filter type: 0x' + tag.toString(16))
         }
+      }
+      // iya-sts: a read that answers null leaves the offset where it was,
+      // and a length that runs past the buffer kept this loop going for
+      // ever on the same bytes, which hung the whole process. An
+      // iteration that does not advance is malformed BER.
+      if (reader.offset <= before) {
+        throw Error('malformed substrings filter at offset ' + before)
       }
     }
 
